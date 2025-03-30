@@ -1,2 +1,3 @@
-Username,Password,Role
-admin,BOOM,Admin
+admin1,AdminPass123,Admin
+organizer1,OrgPass123,Organizer
+user1,user1,User

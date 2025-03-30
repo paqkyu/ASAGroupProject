@@ -1,25 +1,25 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class TicketingSystemGUI {
+public class TicketingSystem {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private JTextField usernameField, regUsernameField;
     private JPasswordField passwordField, regPasswordField;
-    private JButton loginButton, registerButton, promoteButton;
+    private JButton loginButton, registerButton, promoteButton, deleteButton, viewEventButton, promoteToOrganizerButton, demoteUser, refreshButton;
     private JLabel errorLabel;
-    private JPanel DashboardPanel;
+    private JPanel DashboardPanel, buttonsPanel;
     private Authentication Authentication; 
     private Account loggedInAccount; 
 
-    public TicketingSystemGUI() {
+    public TicketingSystem() {
         Authentication = new Authentication();
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            TicketingSystemGUI gui = new TicketingSystemGUI();
+            TicketingSystem gui = new TicketingSystem();
             gui.createAndShowGUI();
         });
     }
@@ -99,6 +99,13 @@ public class TicketingSystemGUI {
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         DashboardPanel.add(welcomeLabel, BorderLayout.NORTH);
 
+        //View Events Button
+        JButton viewEventsButton = new JButton("View Events");
+        viewEventsButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "Events");
+        });
+        DashboardPanel.add(viewEventsButton, BorderLayout.CENTER);
+
         JButton logoutButton = new JButton("Logout:");
         logoutButton.addActionListener(e -> {
             cardLayout.show(cardPanel, "Login");
@@ -108,6 +115,16 @@ public class TicketingSystemGUI {
 
         return DashboardPanel;
 
+    }
+    //Panel for event organizer
+    private JPanel createOrganizerPanel() {
+        DashboardPanel = new JPanel(new BorderLayout());
+
+        JLabel organizerLabel = new JLabel("Event Organizer Board", SwingConstants.CENTER);
+        organizerLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        DashboardPanel.add(organizerLabel, BorderLayout.NORTH);
+
+        return DashboardPanel;
     }
     //Screen after login for admin users
     private JPanel createAdminDashboardPanel() {
@@ -125,30 +142,45 @@ public class TicketingSystemGUI {
 
         Panel.add(logoutButton, BorderLayout.SOUTH);
 
-        JPanel promotePanel = new JPanel(new GridLayout(3, 1, 10, 10));
-        promotePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel promoteLabel = new JLabel("Promote User: ");
-        JTextField userToPromoteField = new JTextField();
-        promotePanel.add(promoteLabel);
-        promotePanel.add(userToPromoteField);
+        JPanel userManagementPanel = new JPanel(new BorderLayout());
+        userManagementPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Promote BUTTON
-        promoteButton = new JButton ("Promote");
+        // User List
+        DefaultListModel<String> userListModel = new DefaultListModel<>();
+        JList<String> userList = new JList<>(userListModel);
+        userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane userListScrollPane = new JScrollPane(userList);
+        userListScrollPane.setPreferredSize(new Dimension(200, 100));
+        userManagementPanel.add(userListScrollPane, BorderLayout.CENTER);
+
+        Authentication auth = new Authentication();
+        auth.loadUsersIntoList(userListModel);
+
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+
+        // Promote TO ADMIN BUTTON
+        promoteButton = new JButton ("Promote to Admin");
         promoteButton.addActionListener(e -> {
-            String username = userToPromoteField.getText().trim();
-            if (username.isEmpty()) {
-                errorLabel.setText("Enter a username.");
+            String selectedUser = userList.getSelectedValue();
+            if (selectedUser == null) {
+                errorLabel.setText("Select a User to promote to admin.");
                 errorLabel.setForeground(Color.RED);
                 return;
             }
-            
+            Account accountToPromote = auth.getAccountByUsername(selectedUser);
+            if (accountToPromote == null) {
+                errorLabel.setText("User not found.");
+                errorLabel.setForeground(Color.RED);
+                return;
+            }
             if (loggedInAccount instanceof Admin) {
                 Admin admin = (Admin) loggedInAccount;
-                boolean success = admin.promoteUser(username);
+                boolean success = admin.promoteUser(selectedUser);
 
                 if (success) {
-                    errorLabel.setText("User has been promoted.");
+                    errorLabel.setText("User " + selectedUser + " has been promoted.");
                     errorLabel.setForeground(Color.GREEN);
                 } else {
                     errorLabel.setText("User not found or is already an Admin.");
@@ -159,9 +191,89 @@ public class TicketingSystemGUI {
                 errorLabel.setForeground(Color.RED);
             }
         });
-        promotePanel.add(promoteButton);
+        buttonsPanel.add(promoteButton);
+
+        //Promote to organizer button
+        promoteToOrganizerButton = new JButton ("Promote to Organizer");
+        promoteToOrganizerButton.addActionListener(e -> {
+            String selectedUser = userList.getSelectedValue();
+            if (selectedUser == null) {
+                errorLabel.setText("Select a User to promote to organizer.");
+                errorLabel.setForeground(Color.RED);
+                return;
+            }
+            
+            Account accountToPromote = auth.getAccountByUsername(selectedUser);
+            if (accountToPromote == null) {
+                errorLabel.setText("User not found.");
+                errorLabel.setForeground(Color.RED);
+                return;
+            }
+            if (loggedInAccount instanceof Admin) {
+                Admin admin = (Admin) loggedInAccount;
+                boolean succcess = admin.promoteToOrganizer(selectedUser);
+
+                if (succcess) {
+                    errorLabel.setText("User " + selectedUser + " has been promoted to organizer.");
+                    errorLabel.setForeground(Color.GREEN);
+                    auth.loadUsersIntoList(userListModel);
+                } else {
+                    errorLabel.setText("User not found or is already an organizer.");
+                    errorLabel.setForeground(Color.RED);
+                }
+            } else {
+                errorLabel.setText("You do not have permission to promote users.");
+                errorLabel.setForeground(Color.RED);
+            }
+    });
+    buttonsPanel.add(promoteToOrganizerButton);
+
+    // Delete User BUTTON
+    deleteButton = new JButton("Delete User");
+    deleteButton.addActionListener(e -> {
+        String selectedUser = userList.getSelectedValue();
+        if (selectedUser == null) {
+            errorLabel.setText("Select a User to delete.");
+            errorLabel.setForeground(Color.RED);
+            return;
+        }
+        Account accountToDelete = auth.getAccountByUsername(selectedUser);
+        if (accountToDelete == null) {
+            errorLabel.setText("User not found.");
+            errorLabel.setForeground(Color.RED);
+            return;
+        }
+        if (loggedInAccount instanceof Admin) {
+            Admin admin = (Admin) loggedInAccount;
+            boolean success = admin.deleteUser(accountToDelete.getusername());
+
+            if (success) {
+                errorLabel.setText("User " + selectedUser + " has been deleted.");
+                errorLabel.setForeground(Color.GREEN);
+                auth.loadUsersIntoList(userListModel);
+            } else {
+                errorLabel.setText("User not found or cannot be deleted.");
+                errorLabel.setForeground(Color.RED);
+            }
+        } else {
+            errorLabel.setText("You do not have permission to delete users.");
+            errorLabel.setForeground(Color.RED);
+        }
+    });
+    buttonsPanel.add(deleteButton);
+
+    //Refresh Button
+    JButton refreshButton = new JButton("Refresh");
+    refreshButton.addActionListener(e -> {
+        auth.loadUsersIntoList(userListModel);
+        errorLabel.setText("User list refreshed.");
+        errorLabel.setForeground(Color.GREEN);
+    });
+    buttonsPanel.add(refreshButton);
+
         
-        Panel.add(promotePanel, BorderLayout.CENTER);
+        userManagementPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        Panel.add(userManagementPanel, BorderLayout.CENTER);
         return Panel;  
     } 
     private JPanel createUserDashboardPanel() {
@@ -195,6 +307,10 @@ public class TicketingSystemGUI {
                 cardLayout.show(cardPanel, "AdminDashboard");
             } else if (loggedInAccount instanceof User) {
                 cardLayout.show(cardPanel, "UserDashboard");
+            } else if (loggedInAccount instanceof Organizer) {
+                cardLayout.show(cardPanel, "OrganizerDashboard");
+            } else {
+                cardLayout.show(cardPanel, "Dashboard");
             }
         } else {
             errorLabel.setText("Invalid username or password.");

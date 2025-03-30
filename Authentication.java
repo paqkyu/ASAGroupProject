@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import javax.swing.DefaultListModel;
 
 public class Authentication {
     private static final String Accounts_FILE = "Accounts.csv";
@@ -42,6 +43,23 @@ public class Authentication {
         }
     }
 
+    public void loadUsersIntoList(DefaultListModel<String> userListModel) {
+        userListModel.clear();
+        for (Account account : accounts) {
+            if(!(account instanceof Admin)) {
+                userListModel.addElement(account.getusername());
+            }
+        }
+    }
+    public Account getAccountByUsername(String username) {
+        for (Account account : accounts) {
+            if (account.getusername().equalsIgnoreCase(username)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
     public static void accountToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(Accounts_FILE))) {
             for (Account account : accounts) {
@@ -73,24 +91,4 @@ public class Authentication {
         }
         return null;
     }
-    public boolean promoteUser(String username) {
-        for (Account account : accounts) {
-            if (account.getusername().equals(username)) {
-                System.out.println("Found user: " + username + "with role: " + account.getrole());
-                if (!(account instanceof Admin)) {
-                    account.setRole("Admin");
-                    System.out.println("Updated Role to:" + account.getrole());
-                    accountToFile();
-                    System.out.println("User " + username + " has been promoted to Admin.");
-                    return true;
-                } else {
-                    System.out.println("User is already an Admin.");
-                    return false;
-                }
-            }
-        } 
-        System.out.println("User was not found or is already an Admin.");
-        return false;
-    } 
-   
-}
+} 
