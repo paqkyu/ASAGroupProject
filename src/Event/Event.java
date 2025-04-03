@@ -5,16 +5,18 @@ public class Event {
     private String venueLocation;
     private String eventDescription;
     private double ticketPrice; 
-    private int Capacity;
+    private int capacity;
+    private int availableSeats;
     private String specialInstructions;
 
-    public Event(String eventName, String eventDateTime, String venueLocation, String eventDescription, double ticketPrice, int Capacity, String specialInstructions) {
+    public Event(String eventName, String eventDateTime, String venueLocation, String eventDescription, double ticketPrice, int capacity, int availableSeats, String specialInstructions) {
         this.eventName = eventName;
         this.eventDateTime = eventDateTime;
         this.venueLocation = venueLocation;
         this.eventDescription = eventDescription;
         this.ticketPrice = ticketPrice;
-        this.Capacity = Capacity;
+        this.capacity = capacity;
+        this.availableSeats = availableSeats;
         this.specialInstructions = specialInstructions;
     }
     public String getEventName() {
@@ -40,5 +42,12 @@ public class Event {
     }
     public void setTicketPrice(double ticketPrice) {
         this.ticketPrice = ticketPrice;
+    }
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(int availableSeats) {
+        this.availableSeats = availableSeats;
     }
 }
