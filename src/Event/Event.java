@@ -10,7 +10,6 @@ public class Event {
     private int availableSeats;
     private String specialInstructions;
 
-    // Constructor
     public Event(String eventName, String eventDateTime, String venueLocation, String eventDescription, double ticketPrice, int capacity, int availableSeats, String specialInstructions) {
         this.eventName = eventName;
         this.eventDateTime = eventDateTime;
@@ -22,53 +21,28 @@ public class Event {
         this.specialInstructions = specialInstructions;
     }
 
-    // Getters and Setters
     public String getEventName() {
         return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
     }
 
     public String getEventDateTime() {
         return eventDateTime;
     }
 
-    public void setEventDateTime(String eventDateTime) {
-        this.eventDateTime = eventDateTime;
-    }
-
     public String getVenueLocation() {
         return venueLocation;
-    }
-
-    public void setVenueLocation(String venueLocation) {
-        this.venueLocation = venueLocation;
     }
 
     public String getEventDescription() {
         return eventDescription;
     }
 
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
-
     public double getTicketPrice() {
         return ticketPrice;
     }
 
-    public void setTicketPrice(double ticketPrice) {
-        this.ticketPrice = ticketPrice;
-    }
-
     public int getCapacity() {
         return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
     }
 
     public int getAvailableSeats() {
@@ -83,7 +57,14 @@ public class Event {
         return specialInstructions;
     }
 
-    public void setSpecialInstructions(String specialInstructions) {
-        this.specialInstructions = specialInstructions;
+    // method to book tickets
+    public boolean bookTickets(int numberOfTickets) {
+        if (numberOfTickets > availableSeats) {
+            System.out.println("Not enough available seats.");
+            return false;
+        } else {
+            availableSeats -= numberOfTickets;
+            return true;
+        }
     }
 }
