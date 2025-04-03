@@ -53,6 +53,7 @@ public class LoginPanel extends JPanel {
 
         JButton viewEventsButton = new JButton("View Events");
         viewEventsButton.addActionListener(e -> cardLayout.show(cardPanel, "EventsDashBoard"));
+        add(viewEventsButton);
 
         errorLabel = new JLabel("", SwingConstants.CENTER);
         add(errorLabel);
