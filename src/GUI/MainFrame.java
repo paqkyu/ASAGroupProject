@@ -32,6 +32,8 @@ public class MainFrame {
         cardPanel.add(new AdminDashboardPanel(controller, cardPanel, cardLayout), "AdminDashboard");
         cardPanel.add(new UserDashboardPanel(controller, cardPanel, cardLayout), "UserDashboard");
         cardPanel.add(new OrganizerDashboardPanel(controller, cardPanel, cardLayout), "OrganizerDashboard");
+        cardPanel.add(new SettingsPanel(controller, cardPanel, cardLayout), "Settings");
+        cardPanel.add(new EventsPanel(controller, cardPanel, cardLayout), "Events");
     
         frame.add(cardPanel);
         frame.setVisible(true);

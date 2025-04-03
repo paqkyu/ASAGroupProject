@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class SettingsPanel extends JPanel {
     public SettingsPanel(Controller controller, JPanel cardPanel, CardLayout cardLayout) {
+        setPreferredSize(new Dimension(1920, 1080));
         setLayout(new GridLayout(5, 2, 10, 10));
 
         // Change Username Section
