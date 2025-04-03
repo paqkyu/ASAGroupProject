@@ -18,4 +18,14 @@ public class User extends Account {
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }
+    public boolean bookTickets(Event event, int numberOfTickets) {
+        boolean success = event.bookTickets(numberOfTickets);
+        if (success) {
+            System.out.println("Successfully booked " + numberOfTickets + " ticket(s) for event: " + event.getEventName());
+            return true;
+        } else {
+            System.out.println("Failed to book tickets. Not enough available seats.");
+            return false;
+        }
+    }
 }
