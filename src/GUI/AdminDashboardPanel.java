@@ -1,101 +1,111 @@
 package GUI;
-import javax.swing.*;
 
+import javax.swing.*;
+import Classes.Account;
 import Classes.Admin;
 import Controller.Controller;
-
+import Authentication.Authentication;
 import java.awt.*;
 
 public class AdminDashboardPanel extends JPanel {
-    private JLabel errorLabel;
+    private JLabel feedbackLabel;
     private DefaultListModel<String> userListModel;
     private JList<String> userList;
 
-    
-    
     public AdminDashboardPanel(Controller controller, JPanel cardPanel, CardLayout cardLayout) {
         setLayout(new BorderLayout());
+        setBackground(new Color(240, 240, 240)); // Light gray background
 
+        // Header
         JLabel adminLabel = new JLabel("Admin Dashboard", SwingConstants.CENTER);
         adminLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        adminLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         add(adminLabel, BorderLayout.NORTH);
 
+        // User List Panel
         JPanel userManagementPanel = new JPanel(new BorderLayout());
         userManagementPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        userManagementPanel.setBackground(new Color(255, 255, 255)); // White background
 
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
+        userList.setFont(new Font("Arial", Font.PLAIN, 14));
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane userListScrollPane = new JScrollPane(userList);
-        userListScrollPane.setPreferredSize(new Dimension(200, 100));
+        userListScrollPane.setPreferredSize(new Dimension(300, 200));
         userManagementPanel.add(userListScrollPane, BorderLayout.CENTER);
 
-        controller.getAuthentication().loadUsersIntoList(userListModel);
+        controller.getAuthentication().loadUsersIntoList(userListModel, controller.getLoggedInAccount());
+
+        // Buttons Panel
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonsPanel.setBackground(new Color(255, 255, 255)); // White background
 
-        JButton promoteToAdminButton = new JButton("Promote to Admin");
-        promoteToAdminButton.addActionListener(e -> {
-            String selectedUser = userList.getSelectedValue();
-            if(selectedUser == null) {
-                showError("Please select a user to promote.");
-                return;
-            }
-            if (controller.getLoggedInAccount() instanceof Admin admin) {
-                boolean success = admin.promoteUser(selectedUser);
-                if (!success) {
-                    showError("Failed to promote user. User may not exist or is already an admin.");
-                }
-            }
-        });
-        buttonsPanel.add(promoteToAdminButton);
-
-        JButton promoteToOrganizerButton = new JButton("Promote to Organizer");
+        // Promote to Organizer Button
+        JButton promoteToOrganizerButton = new JButton("Set as Organizer");
+        promoteToOrganizerButton.setFont(new Font("Arial", Font.BOLD, 14));
+        promoteToOrganizerButton.setBackground(new Color(0, 123, 255)); // Blue button
+        promoteToOrganizerButton.setForeground(Color.WHITE);
+        promoteToOrganizerButton.setFocusPainted(false);
         promoteToOrganizerButton.addActionListener(e -> {
             String selectedUser = userList.getSelectedValue();
-            if(selectedUser == null) {
+            if (selectedUser == null) {
                 showError("Please select a user to promote.");
                 return;
             }
+            selectedUser = selectedUser.split(" ")[0].trim();
             if (controller.getLoggedInAccount() instanceof Admin admin) {
                 boolean success = admin.promoteToOrganizer(selectedUser);
                 if (success) {
                     showSuccess("User " + selectedUser + " has been promoted to organizer.");
-                    controller.getAuthentication().loadUsersIntoList(userListModel);
+                    controller.getAuthentication().loadUsersIntoList(userListModel, controller.getLoggedInAccount());
                 } else {
                     showError("Failed to promote user. User may not exist or is already an organizer.");
                 }
-            } else {
-                showError("You are not authorized to perform this action.");
             }
         });
         buttonsPanel.add(promoteToOrganizerButton);
 
-        //Delete User Button
+        // Delete User Button
         JButton deleteUserButton = new JButton("Delete User");
+        deleteUserButton.setFont(new Font("Arial", Font.BOLD, 14));
+        deleteUserButton.setBackground(new Color(220, 53, 69)); // Red button
+        deleteUserButton.setForeground(Color.WHITE);
+        deleteUserButton.setFocusPainted(false);
         deleteUserButton.addActionListener(e -> {
             String selectedUser = userList.getSelectedValue();
-            if(selectedUser == null) {
+            if (selectedUser == null) {
                 showError("Please select a user to delete.");
                 return;
             }
+            selectedUser = selectedUser.split(" ")[0].trim();
+
             if (controller.getLoggedInAccount() instanceof Admin admin) {
-                boolean success = admin.deleteUser(selectedUser);
-                if (success) {
-                    showSuccess("User " + selectedUser + " has been deleted.");
-                    controller.getAuthentication().loadUsersIntoList(userListModel);
+                Authentication auth = controller.getAuthentication();
+                Account accountToDelete = auth.getAccountByUsername(selectedUser);
+                if (accountToDelete != null && !(accountToDelete instanceof Admin)) {
+                    boolean success = admin.deleteUser(selectedUser, auth);
+                    if (success) {
+                        showSuccess("User " + selectedUser + " has been deleted.");
+                        controller.getAuthentication().loadUsersIntoList(userListModel, controller.getLoggedInAccount());
+                    } else {
+                        showError("Failed to delete user. User may not exist.");
+                    }
                 } else {
-                    showError("Failed to delete user. User may not exist or is an admin.");
+                    showError("Admins cannot delete other Admin accounts.");
                 }
-            } else {
-                showError("You are not authorized to perform this action.");
             }
         });
         buttonsPanel.add(deleteUserButton);
 
         // Refresh Button
-        JButton refreshButton = new JButton ("Refresh");
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
+        refreshButton.setBackground(new Color(108, 117, 125)); // Gray button
+        refreshButton.setForeground(Color.WHITE);
+        refreshButton.setFocusPainted(false);
         refreshButton.addActionListener(e -> {
-            controller.getAuthentication().loadUsersIntoList(userListModel);
+            controller.getAuthentication().loadUsersIntoList(userListModel, controller.getLoggedInAccount());
             showSuccess("User list refreshed.");
         });
         buttonsPanel.add(refreshButton);
@@ -103,24 +113,31 @@ public class AdminDashboardPanel extends JPanel {
         userManagementPanel.add(buttonsPanel, BorderLayout.SOUTH);
         add(userManagementPanel, BorderLayout.CENTER);
 
-        //Error Label
-        errorLabel = new JLabel("", SwingConstants.CENTER);
-        errorLabel.setForeground(Color.RED);
-        add(errorLabel, BorderLayout.SOUTH);
+        // Feedback Label
+        feedbackLabel = new JLabel("", SwingConstants.CENTER);
+        feedbackLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        feedbackLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        add(feedbackLabel, BorderLayout.SOUTH);
 
-        //Logout Button
+        // Logout Button
         JButton logoutButton = new JButton("Logout");
+        logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
+        logoutButton.setBackground(new Color(220, 53, 69)); // Red button
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFocusPainted(false);
         logoutButton.addActionListener(e -> cardLayout.show(cardPanel, "Login"));
         add(logoutButton, BorderLayout.SOUTH);
     }
-    //Display error messages method
+
+    // Display error messages method
     private void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setForeground(Color.RED);
+        feedbackLabel.setText(message);
+        feedbackLabel.setForeground(Color.RED);
     }
+
     // Display success messages
     private void showSuccess(String message) {
-        errorLabel.setText(message);
-        errorLabel.setForeground(Color.GREEN);
+        feedbackLabel.setText(message);
+        feedbackLabel.setForeground(Color.GREEN);
     }
 }

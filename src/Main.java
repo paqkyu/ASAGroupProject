@@ -1,5 +1,4 @@
 import javax.swing.*;
-
 import GUI.MainFrame;
 
 public class Main {
@@ -8,5 +7,5 @@ public class Main {
             MainFrame mainFrame = new MainFrame();
             mainFrame.createAndShowGUI();
         });
-    }    
+    }
 }
