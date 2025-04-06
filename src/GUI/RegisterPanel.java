@@ -86,5 +86,8 @@ public class RegisterPanel extends JPanel {
     private void showSuccess(String message) {
         feedbackLabel.setText(message);
         feedbackLabel.setForeground(Color.GREEN);
+        Timer timer = new Timer(3000, e -> feedbackLabel.setText(""));
+        timer.setRepeats(false);
+        timer.start();
     }
 }

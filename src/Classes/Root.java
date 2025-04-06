@@ -18,17 +18,19 @@ public class Root extends Account {
     }
     public boolean promoteUser(String username) {
         Authentication auth = new Authentication();
-        for (Account account : Authentication.getAccounts()) {
-            if (account.getusername().equalsIgnoreCase(username)) {
-                account.setrole("Admin");
-                auth.accountToFile();
-                System.out.println("User " + username + " has been promoted to Admin.");
-                return true;
-            }
+        Account account = auth.getAccountByUsername(username);
+
+        if (account != null && !account.getrole().equals("Admin")) {
+            account.setrole("Admin");
+            auth.accountToFile(); // Save changes to accounts.csv
+            System.out.println("User " + username + " has been promoted to Organizer.");
+            return true;
         }
-        System.out.println("User " + username + " not found or already an Admin.");
+        System.out.println("User " + username + " not found or already an Organizer.");
         return false;
     }
+
+
     public boolean promoteToOrganizer(String username) {
         Authentication Authentication = new Authentication();
         Account account = Authentication.getAccountByUsername(username);
@@ -53,6 +55,9 @@ public class Root extends Account {
         System.out.println("User " + username + " not found or already a User.");
         return false;
     }
+
+
+    
    public boolean deleteUser(String username, Authentication auth) {
     Iterator<Account> iterator = auth.getAccounts().iterator(); // Use an iterator to avoid concurrent modification
     while (iterator.hasNext()) {

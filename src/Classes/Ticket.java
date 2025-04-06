@@ -11,19 +11,16 @@ public class Ticket {
     private static final String TICKETS_FILE = "Tickets.csv";
     private static List<Ticket> tickets = new ArrayList<>();
 
-    // Public constructor for creating new tickets
+    // Public constructor - doesn't auto-add to list anymore
     public Ticket(String username, String eventName, int numberOfTickets) {
         this.username = username;
         this.eventName = eventName;
         this.numberOfTickets = numberOfTickets;
-        tickets.add(this); // Add the ticket to the in-memory list
     }
 
-    // Private constructor for loading tickets from the file
+    // Private constructor for loading
     private Ticket(String username, String eventName, int numberOfTickets, boolean skipSave) {
-        this.username = username;
-        this.eventName = eventName;
-        this.numberOfTickets = numberOfTickets;
+        this(username, eventName, numberOfTickets);
     }
 
     public String getUsername() { return username; }
@@ -42,41 +39,42 @@ public class Ticket {
                     String username = data[0];
                     String eventName = data[1];
                     int numberOfTickets = Integer.parseInt(data[2]);
-                    tickets.add(new Ticket(username, eventName, numberOfTickets, true)); // Use private constructor
+                    tickets.add(new Ticket(username, eventName, numberOfTickets, true));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     public static void createAndSaveTicket(String username, String eventName, int numberOfTickets) {
-        System.out.println("createAndSaveTicket called for: " + username + ", " + eventName + ", " + numberOfTickets);
-        loadTickets(); // Load existing tickets from the file
+        loadTickets(); // Load current state from file
     
-        boolean ticketUpdated = false;
-    
-        // Check if the user already has a booking for the same event
+        boolean found = false;
+        // Check for existing ticket
         for (Ticket ticket : tickets) {
             if (ticket.getUsername().equals(username) && ticket.getEventName().equals(eventName)) {
-                ticket.numberOfTickets += numberOfTickets; // Append the ticket count
-                ticketUpdated = true;
+                // Update existing ticket
+                ticket.numberOfTickets = numberOfTickets; // SET the value, don't ADD
+                found = true;
                 break;
             }
         }
     
-        // If no existing booking was found, create a new ticket
-        if (!ticketUpdated) {
+        if (!found) {
+            // Add new ticket
             tickets.add(new Ticket(username, eventName, numberOfTickets));
         }
     
-        // Save the updated tickets list to the file
-        saveTickets();
+        saveTickets(); // Save updated list
     }
+
     public static void saveTickets() {
-        System.out.println("saveTickets called");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKETS_FILE))) {
             for (Ticket ticket : tickets) {
-                writer.write(ticket.getUsername() + "," + ticket.getEventName() + "," + ticket.getNumberOfTickets());
+                writer.write(ticket.getUsername() + "," + 
+                            ticket.getEventName() + "," + 
+                            ticket.getNumberOfTickets());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -84,7 +82,7 @@ public class Ticket {
         }
     }
 
-    //method for when user updates usernmame
+    // Other methods remain unchanged...
     public static void updateUsernameInTickets(String oldUsername, String newUsername) {
         loadTickets();
         for (Ticket ticket : tickets) {
@@ -107,6 +105,7 @@ public class Ticket {
     }
 
     public void sendConfirmation() {
-        System.out.println("Confirmation: " + username + " booked " + numberOfTickets + " tickets for " + eventName);
+        System.out.println("Confirmation: " + username + " booked " + 
+                          numberOfTickets + " tickets for " + eventName);
     }
 }

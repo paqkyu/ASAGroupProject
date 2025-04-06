@@ -72,6 +72,8 @@ public class LoginPanel extends JPanel {
                 } else if (account instanceof Root) {
                     cardLayout.show(cardPanel, "RootDashboard");
                 } else if (account instanceof Organizer) {
+                    organizerDashboardPanel.refreshUsername(); // refreshes username so that it displays properly
+                    organizerDashboardPanel.refreshEventList(); // refreshes event list so that it displays properly
                     cardLayout.show(cardPanel, "OrganizerDashboard");
                 } else if (account instanceof User) {
                     userDashboardPanel.refreshUsername(); // refreshes username so that it displays properly

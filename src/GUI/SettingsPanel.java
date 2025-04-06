@@ -1,5 +1,6 @@
 package GUI;
 
+import Classes.Ticket;
 import javax.swing.*;
 import Controller.Controller;
 import Classes.User;
@@ -42,7 +43,7 @@ public class SettingsPanel extends JPanel {
         gbc.gridy = 1;
         JButton changeUsernameButton = new JButton("Change Username");
         changeUsernameButton.setFont(new Font("Arial", Font.BOLD, 14));
-        changeUsernameButton.setBackground(new Color(0, 123, 255)); // Blue button
+        changeUsernameButton.setBackground(new Color(0, 123, 255)); 
         changeUsernameButton.setForeground(Color.WHITE);
         changeUsernameButton.setFocusPainted(false);
         changeUsernameButton.addActionListener(e -> {
@@ -55,6 +56,7 @@ public class SettingsPanel extends JPanel {
             boolean success = controller.getAuthentication().changeUsername(oldUsername, newUsername);
             if (success) {
                 showSuccess("Username changed successfully!");
+                Ticket.updateUsernameInTickets(oldUsername, newUsername);
             } else {
                 showError("Failed to change username.");
             }
@@ -87,7 +89,7 @@ public class SettingsPanel extends JPanel {
         gbc.gridwidth = 2;
         JButton changePasswordButton = new JButton("Change Password");
         changePasswordButton.setFont(new Font("Arial", Font.BOLD, 14));
-        changePasswordButton.setBackground(new Color(40, 167, 69)); // Green button
+        changePasswordButton.setBackground(new Color(40, 167, 69)); 
         changePasswordButton.setForeground(Color.WHITE);
         changePasswordButton.setFocusPainted(false);
         changePasswordButton.addActionListener(e -> {
@@ -112,7 +114,7 @@ public class SettingsPanel extends JPanel {
         gbc.gridy = 5;
         JButton deleteAccountButton = new JButton("Delete Account");
         deleteAccountButton.setFont(new Font("Arial", Font.BOLD, 14));
-        deleteAccountButton.setBackground(new Color(220, 53, 69)); // Red button
+        deleteAccountButton.setBackground(new Color(220, 53, 69)); 
         deleteAccountButton.setForeground(Color.WHITE);
         deleteAccountButton.setFocusPainted(false);
         deleteAccountButton.addActionListener(e -> {
@@ -136,7 +138,7 @@ public class SettingsPanel extends JPanel {
         gbc.gridy = 6;
         JButton backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
-        backButton.setBackground(new Color(255, 193, 7)); // Yellow button
+        backButton.setBackground(new Color(255, 193, 7)); 
         backButton.setForeground(Color.WHITE);
         backButton.setFocusPainted(false);
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "UserDashboard"));

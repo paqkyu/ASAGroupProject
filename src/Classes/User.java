@@ -2,7 +2,6 @@ package Classes;
 
 import Authentication.Authentication;
 import Event.Event;
-import Classes.Ticket;
 
 public class User extends Account {
     public User(String username, String password, String role) {
@@ -16,8 +15,10 @@ public class User extends Account {
 
     public boolean bookTickets(Event event, int numberOfTickets) {
         if (event.bookTickets(numberOfTickets)) {
-            Ticket ticket = new Ticket(this.getusername(), event.getEventName(), numberOfTickets);
-            ticket.sendConfirmation();
+            // Use the createAndSaveTicket method instead of creating Ticket directly
+            Ticket.createAndSaveTicket(this.getusername(), event.getEventName(), numberOfTickets);
+            System.out.println("Confirmation: " + this.getusername() + " booked " + 
+                             numberOfTickets + " tickets for " + event.getEventName());
             return true;
         }
         return false;

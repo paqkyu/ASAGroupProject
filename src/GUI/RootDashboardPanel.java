@@ -14,7 +14,7 @@ public class RootDashboardPanel extends JPanel {
 
     public RootDashboardPanel(Controller controller, JPanel cardPanel, CardLayout cardLayout) {
         setLayout(new BorderLayout());
-        setBackground(new Color(240, 240, 240)); // Light gray background
+        setBackground(new Color(240, 240, 240)); 
 
         // Header
         JLabel titleLabel = new JLabel("Root Dashboard", SwingConstants.CENTER);
@@ -25,7 +25,7 @@ public class RootDashboardPanel extends JPanel {
         // User List Panel
         JPanel userManagementPanel = new JPanel(new BorderLayout());
         userManagementPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        userManagementPanel.setBackground(new Color(255, 255, 255)); // White background
+        userManagementPanel.setBackground(new Color(255, 255, 255)); 
 
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
@@ -39,12 +39,12 @@ public class RootDashboardPanel extends JPanel {
 
         // Buttons Panel
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        buttonsPanel.setBackground(new Color(255, 255, 255)); // White background
+        buttonsPanel.setBackground(new Color(255, 255, 255)); 
 
         // Promote to Organizer Button
         JButton promoteToOrganizerButton = new JButton("Set as Organizer");
         promoteToOrganizerButton.setFont(new Font("Arial", Font.BOLD, 14));
-        promoteToOrganizerButton.setBackground(new Color(0, 123, 255)); // Blue button
+        promoteToOrganizerButton.setBackground(new Color(0, 123, 255)); 
         promoteToOrganizerButton.setForeground(Color.WHITE);
         promoteToOrganizerButton.setFocusPainted(false);
         promoteToOrganizerButton.addActionListener(e -> {
@@ -69,7 +69,7 @@ public class RootDashboardPanel extends JPanel {
         //Demote button
         JButton demoteUserButton = new JButton("Set to User");
         demoteUserButton.setFont(new Font("Arial", Font.BOLD, 14));
-        demoteUserButton.setBackground(new Color(255, 193, 7)); // Yellow button
+        demoteUserButton.setBackground(new Color(255, 193, 7)); 
         demoteUserButton.setForeground(Color.WHITE);
         demoteUserButton.setFocusPainted(false);
         demoteUserButton.addActionListener(e -> {
@@ -94,7 +94,7 @@ public class RootDashboardPanel extends JPanel {
         // Set as Admin Button
         JButton setAsAdminButton = new JButton("Set as Admin");
         setAsAdminButton.setFont(new Font("Arial", Font.BOLD, 14));
-        setAsAdminButton.setBackground(new Color(40, 167, 69)); // Green button
+        setAsAdminButton.setBackground(new Color(40, 167, 69)); 
         setAsAdminButton.setForeground(Color.WHITE);
         setAsAdminButton.setFocusPainted(false);
         setAsAdminButton.addActionListener(e -> {
@@ -103,6 +103,7 @@ public class RootDashboardPanel extends JPanel {
                 showError("Please select a user to promote.");
                 return;
             }
+            selectedUser = selectedUser.split(" ")[0].trim();
             if (controller.getLoggedInAccount() instanceof Root root) {
                 boolean success = root.promoteUser(selectedUser);
                 if (success) {
@@ -118,7 +119,7 @@ public class RootDashboardPanel extends JPanel {
         // Delete User Button
         JButton deleteUserButton = new JButton("Delete User");
         deleteUserButton.setFont(new Font("Arial", Font.BOLD, 14));
-        deleteUserButton.setBackground(new Color(220, 53, 69)); // Red button
+        deleteUserButton.setBackground(new Color(220, 53, 69)); 
         deleteUserButton.setForeground(Color.WHITE);
         deleteUserButton.setFocusPainted(false);
         deleteUserButton.addActionListener(e -> {
@@ -145,7 +146,7 @@ public class RootDashboardPanel extends JPanel {
         // Refresh Button
         JButton refreshButton = new JButton("Refresh");
         refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
-        refreshButton.setBackground(new Color(108, 117, 125)); // Gray button
+        refreshButton.setBackground(new Color(108, 117, 125)); 
         refreshButton.setForeground(Color.WHITE);
         refreshButton.setFocusPainted(false);
         refreshButton.addActionListener(e -> {
@@ -166,7 +167,7 @@ public class RootDashboardPanel extends JPanel {
         // Logout Button
         JButton logoutButton = new JButton("Logout");
         logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
-        logoutButton.setBackground(new Color(220, 53, 69)); // Red button
+        logoutButton.setBackground(new Color(220, 53, 69)); 
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setFocusPainted(false);
         logoutButton.addActionListener(e -> cardLayout.show(cardPanel, "Login"));

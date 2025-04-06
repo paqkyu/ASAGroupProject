@@ -64,6 +64,10 @@ public class Controller {
 
     public boolean addEvent(Event event) {
         if (loggedInAccount instanceof Organizer organizer && event != null) {
+            if (eventManager.isEventNameDuplicate(event.getEventName())) {
+                System.out.println("Event name already exists.");
+                return false;
+            }
             return organizer.addEvent(event, eventManager);
         }
         return false;

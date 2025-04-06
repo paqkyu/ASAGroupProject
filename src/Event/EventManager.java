@@ -19,17 +19,18 @@ public class EventManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 9) {
+                if (data.length == 10) {
                     String eventName = data[0];
-                    String eventDateTime = data[1];
-                    String venueLocation = data[2];
-                    String eventDescription = data[3];
-                    double ticketPrice = Double.parseDouble(data[4]);
-                    int capacity = Integer.parseInt(data[5]);
-                    int availableSeats = Integer.parseInt(data[6]);
-                    String specialInstructions = data[7];
-                    String organizerUsername = data[8];
-                    events.add(new Event(eventName, eventDateTime, venueLocation, eventDescription, 
+                    String eventDate = data[1]; 
+                    String eventTime = data[2]; 
+                    String venueLocation = data[3];
+                    String eventDescription = data[4];
+                    double ticketPrice = Double.parseDouble(data[5]);
+                    int capacity = Integer.parseInt(data[6]);
+                    int availableSeats = Integer.parseInt(data[7]);
+                    String specialInstructions = data[8];
+                    String organizerUsername = data[9];
+                    events.add(new Event(eventName, eventDate, eventTime, venueLocation, eventDescription, 
                         ticketPrice, capacity, availableSeats, specialInstructions, organizerUsername));
                 }
             }
@@ -38,11 +39,21 @@ public class EventManager {
         }
     }
 
-    public void addEvent(Event event) {
+    public boolean isEventNameDuplicate(String eventName) {
+        return events.stream().anyMatch(e -> e.getEventName().equalsIgnoreCase(eventName));
+    }
+    
+    public boolean addEvent(Event event) {
         if (event != null) {
+           if(isEventNameDuplicate(event.getEventName())) {
+                System.out.println("Event name already exists.");
+                return false;
+            }
             events.add(event);
             saveEventsToFile();
-        }
+            return true;
+           }
+        return false;
     }
 
     public void updateEvent(Event updatedEvent) {
@@ -70,7 +81,7 @@ public class EventManager {
     private static void saveEventsToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(EVENTS_FILE))) {
             for (Event event : events) {
-                writer.write(event.getEventName() + "," + event.getEventDateTime() + "," + 
+                writer.write(event.getEventName() + "," + event.getEventDate() + "," + event.getEventTime() + "," + 
                     event.getVenueLocation() + "," + event.getEventDescription() + "," + 
                     event.getTicketPrice() + "," + event.getCapacity() + "," + 
                     event.getAvailableSeats() + "," + event.getSpecialInstructions() + "," + 
