@@ -141,7 +141,13 @@ public class SettingsPanel extends JPanel {
         backButton.setBackground(new Color(255, 193, 7)); 
         backButton.setForeground(Color.WHITE);
         backButton.setFocusPainted(false);
-        backButton.addActionListener(e -> cardLayout.show(cardPanel, "UserDashboard"));
+        backButton.addActionListener(e -> {
+            if (controller.getLoggedInAccount() instanceof Classes.Admin) {
+                cardLayout.show(cardPanel, "AdminDashboard");
+            } else {
+                cardLayout.show(cardPanel, "UserDashboard");
+            }
+        });
         formPanel.add(backButton, gbc);
 
         add(formPanel, BorderLayout.CENTER);

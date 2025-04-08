@@ -20,14 +20,15 @@ public class Authentication {
     }
 
     public static ArrayList<Account> getAccounts() {
-        return accounts; 
+        return accounts;
     }
 
     private void loadAccounts() {
         File file = new File(ACCOUNTS_FILE);
         if (!file.exists()) {
             // Seed with default admin
-            accounts.add(new Admin("admin1", "AdminPass123", "Admin"));
+            String defaultAdminPass = PasswordUtil.hashPassword("AdminPass123");
+            accounts.add(new Admin("admin1", defaultAdminPass, "Admin"));
             accountToFile();
             return;
         }
@@ -37,7 +38,7 @@ public class Authentication {
                 String[] data = line.split(",");
                 if (data.length == 3) {
                     String username = data[0];
-                    String password = data[1];
+                    String password = data[1]; // already hashed
                     String role = data[2];
                     switch (role) {
                         case "Admin":
@@ -61,10 +62,8 @@ public class Authentication {
         userListModel.clear();
         for (Account account : accounts) {
             if (loggedInAccount instanceof Root) {
-                // Root can see all accounts
                 userListModel.addElement(account.getusername() + " (" + account.getrole() + ")");
             } else if (loggedInAccount instanceof Admin) {
-                // Admin can only see Organizers and Users
                 if (!(account instanceof Admin) && !(account instanceof Root)) {
                     userListModel.addElement(account.getusername() + " (" + account.getrole() + ")");
                 }
@@ -74,7 +73,6 @@ public class Authentication {
 
     public Account getAccountByUsername(String username) {
         for (Account account : accounts) {
-            System.out.println("Checking account: " + account.getusername());
             if (account.getusername().equalsIgnoreCase(username)) {
                 return account;
             }
@@ -96,7 +94,9 @@ public class Authentication {
     public boolean register(String username, String password) {
         if (username.isEmpty() || password.isEmpty()) return false;
         if (getAccountByUsername(username) != null) return false;
-        accounts.add(new User(username, password, "User"));
+
+        String hashedPassword = PasswordUtil.hashPassword(password);
+        accounts.add(new User(username, hashedPassword, "User"));
         accountToFile();
         return true;
     }
@@ -116,28 +116,29 @@ public class Authentication {
 
     public Account login(String username, String password) {
         String rootUser = "root";
-        String rootPass = getRootPass(rootUser); // Use the existing instance to get the root password
-    
-        // Check for root login
+        String rootPass = getRootPass(rootUser);
+
         if (username.equalsIgnoreCase(rootUser) && password.equals(rootPass)) {
             return new Root(rootUser, rootPass, "Root");
         }
-    
-        // Check for other accounts
+
+        String hashedPassword = PasswordUtil.hashPassword(password);
         for (Account account : accounts) {
-            if (account.getusername().equalsIgnoreCase(username) && account.getpassword().equals(password)) {
+            if (account.getusername().equalsIgnoreCase(username) &&
+                account.getpassword().equals(hashedPassword)) {
                 return account;
             }
         }
-    
-        // If no match is found, return null
+
         return null;
     }
 
     public boolean changePassword(String username, String oldPassword, String newPassword) {
         Account account = getAccountByUsername(username);
-        if (account != null && account.getpassword().equals(oldPassword)) {
-            account.setpassword(newPassword);
+        String hashedOld = PasswordUtil.hashPassword(oldPassword);
+        if (account != null && account.getpassword().equals(hashedOld)) {
+            String hashedNew = PasswordUtil.hashPassword(newPassword);
+            account.setpassword(hashedNew);
             accountToFile();
             return true;
         }
