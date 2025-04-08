@@ -103,7 +103,7 @@ public class Authentication {
 
     public String getRootPass(String username) {
         String rootpassword = null;
-        try (BufferedReader br = new BufferedReader(new FileReader("RootPass.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("RootPass.csv"))) {
             rootpassword = br.readLine();
             if (username.equals("root")) {
                 return rootpassword;
