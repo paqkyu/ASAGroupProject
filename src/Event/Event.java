@@ -44,6 +44,9 @@ public class Event {
     public void setEventName(String eventName) { this.eventName = eventName; }
     public void setEventDate(String eventDate) { this.eventDate = eventDate; }
     public void setEventTime(String eventTime) { this.eventTime = eventTime; }
+    public void setEventDescription(String eventDescription) { this.eventDescription = eventDescription; }
+
+
 
 
     public boolean bookTickets(int numberOfTickets) {

@@ -61,8 +61,18 @@ public class OrganizerDashboardPanel extends JPanel {
             String name = JOptionPane.showInputDialog(this, "Event Name:");
             String date = JOptionPane.showInputDialog(this, "Event Date (YYYY-MM-DD):");
             String time = JOptionPane.showInputDialog(this, "Event Time (HH:MM):");
+            String[] descriptionOptions = {"Concert", "Sport", "Theater", "Other"};
+            String description = (String) JOptionPane.showInputDialog(
+                this,
+                "Select event Description:",
+                "Event Description",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                descriptionOptions,
+                descriptionOptions[0]
+            );
             if (name != null && date != null && time != null && !name.isEmpty() && !date.isEmpty() && !time.isEmpty()) {
-                Event event = new Event(name, date, time, "OAKA", "Live event", 20.0, 100, 100, "None",
+                Event event = new Event(name, date, time, "OAKA", description, 20.0, 100, 100, "None",
                         controller.getLoggedInAccount().getusername());
                 if (controller.addEvent(event)) {
                     refreshEventList();
@@ -211,7 +221,7 @@ public class OrganizerDashboardPanel extends JPanel {
         // Get events created by the logged-in organizer
         controller.getEventManager().getEventsByOrganizer(organizer.getusername())
                 .forEach(e -> eventListModel.addElement(e.getEventName() + " - " + e.getEventDate() + " " + e.getEventTime() + 
-                        " - " + e.getAvailableSeats() + " seats available"));
+                        " - " + e.getAvailableSeats() + " seats available - " + e.getEventDescription()));
     }
 }
 
