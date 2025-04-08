@@ -63,6 +63,28 @@ public class AdminDashboardPanel extends JPanel {
         });
         buttonsPanel.add(promoteToOrganizerButton);
 
+        // Set as User Button
+        JButton setAsUserButton = new JButton("Set as User");
+        styleButton(setAsUserButton, new Color(40, 167, 69)); // Green button
+        setAsUserButton.addActionListener(e -> {
+            String selectedUser = userList.getSelectedValue();
+            if (selectedUser == null) {
+                showError("Please select a user to demote.");
+                return;
+            }
+            selectedUser = selectedUser.split(" ")[0].trim();
+            if (controller.getLoggedInAccount() instanceof Admin admin) {
+                boolean success = admin.demoteUser(selectedUser);
+                if (success) {
+                    showSuccess("User " + selectedUser + " has been demoted to user.");
+                    controller.getAuthentication().loadUsersIntoList(userListModel, controller.getLoggedInAccount());
+                } else {
+                    showError("Failed to demote user. User may not exist or is already a user.");
+                }
+            }
+        });
+        buttonsPanel.add(setAsUserButton);
+
         // Delete User Button
         JButton deleteUserButton = new JButton("Delete User");
         styleButton(deleteUserButton, new Color(220, 53, 69)); // Red button
