@@ -78,6 +78,22 @@ public class Admin extends Account {
         }
         return false;
     }
+    public boolean demoteUser(String username) {
+        Authentication auth = new Authentication();
+        Account account = auth.getAccountByUsername(username);
+        if (account !=null) {
+            if (account.getrole().equalsIgnoreCase("Admin")) {
+                System.out.println("Cannot demote an admin account.");
+                return false;
+            }
+            account.setrole("User");
+            auth.accountToFile();
+            System.out.println("User " + username + " has been demoted to User.");
+            return true;
+        }
+        System.out.println("User " + username + " not found.");
+        return false;
+    }
     @Override
     public String toString() {
         return "User: " + this.getusername();
